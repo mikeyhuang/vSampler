@@ -28,7 +28,7 @@ import java.util.Map;
 public final class DatabaseBuilder {
     public final static String TAB = GP.TAB;
 
-    public enum Population {EUR, EAS, AFR};
+    public enum Population {EUR, EAS, AFR, AMR, SAS};
     public static final String AF = "_AF";
 
     private final String mafStr;
