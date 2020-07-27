@@ -13,7 +13,7 @@ public class IndexMafTest {
 
     @Test
     public void getMafList() throws IOException {
-        IndexMaf indexMaf = new IndexMaf("/hg19/EUR.gz");
+        IndexMaf indexMaf = new IndexMaf("/hg19//hg38/AMR.gz");
     }
 
 }

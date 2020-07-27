@@ -35,14 +35,14 @@ public enum GeneInDis {
 
     public static int getIdx(final GeneInDis geneInDis) {
         if (geneInDis == null) {
-            return GP.DEFAULT_GENE_DIS.getIdx();
+            return GP.NO_GENE_DIS;
         } else {
             for (GeneInDis geneInDis1:GeneInDis.values()) {
                 if(geneInDis1 == geneInDis) {
                     return geneInDis1.getIdx();
                 }
             }
-            return GP.DEFAULT_GENE_DIS.getIdx();
+            return GP.NO_GENE_DIS;
         }
     }
 

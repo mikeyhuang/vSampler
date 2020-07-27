@@ -12,8 +12,6 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public final class JarCommadLine {
-    private static final Log log = Log.getInstance(JarCommadLine.class);
-
     private static String initializeColor(final String color) {
         if (GP.COLOR_STATUS) return color;
         else return "";

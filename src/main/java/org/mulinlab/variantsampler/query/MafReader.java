@@ -36,6 +36,7 @@ public final class MafReader {
         if(maf < 0 || maf > 50) return null;
 
         MafAddress address = index.getMafAddress(chr, maf);
+        if(address == null) return null;
 
         mafin.seek(address.getMafAddress());
         int size = GlobalParameter.readInt(mafin);

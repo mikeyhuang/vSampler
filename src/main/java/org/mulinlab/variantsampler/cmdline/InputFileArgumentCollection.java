@@ -6,6 +6,8 @@ import org.mulinlab.varnote.cmdline.constant.Arguments;
 import org.mulinlab.varnote.constants.GlobalParameter;
 import org.mulinlab.varnote.utils.format.Format;
 
+import java.io.File;
+
 public final class InputFileArgumentCollection {
     private static final long serialVersionUID = 1L;
 
@@ -33,7 +35,7 @@ public final class InputFileArgumentCollection {
     public Boolean hasHeader = GlobalParameter.DEFAULT_HAS_HEADER;
 
     public String getQueryFilePath() {
-        return queryFile.getArgValue();
+        return new File(queryFile.getArgValue()).getAbsolutePath();
     }
 
     public Format getFormat(final String queryFilePath, final boolean isQuery) {

@@ -71,6 +71,7 @@ public final class GP {
     public static final int NO_GENE_DIS = -1;
     public static final int NO_DTCT = -1;
     public static final int NO_GENE_LD = -1;
+    public static final int NO_GENE_DEVI = -1;
     public static final int NO_LD_BUDDIES = -1;
     public static final int NO_GC = -1;
 

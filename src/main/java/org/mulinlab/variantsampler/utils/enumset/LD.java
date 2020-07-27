@@ -33,14 +33,14 @@ public enum LD {
 
     public static int getIdx(final LD ld) {
         if (ld == null) {
-            return GP.DEFAULT_GENE_LD.getIdx();
+            return GP.NO_GENE_LD;
         } else {
             for (LD ld1:LD.values()) {
                 if(ld1 == ld) {
                     return ld1.getIdx();
                 }
             }
-            return GP.DEFAULT_GENE_LD.getIdx();
+            return GP.NO_GENE_LD;
         }
     }
 

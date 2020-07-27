@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.mulinlab.variantsampler.utils.GP;
 import org.mulinlab.variantsampler.utils.QueryParam;
 import org.mulinlab.variantsampler.utils.node.DBNode;
+import org.mulinlab.varnote.cmdline.abstractclass.CMDProgram;
+import org.mulinlab.varnote.cmdline.tools.Count;
 import org.mulinlab.varnote.operations.decode.TABLocCodec;
 import org.mulinlab.varnote.operations.readers.db.VannoMixReader;
 import org.mulinlab.varnote.operations.readers.db.VannoReader;
@@ -18,7 +20,7 @@ public class SamplerTest {
     @Test
     public void doQuery() {
         try {
-            Format format = VannoUtils.getCoordAlleleFormat();
+            Format format = VannoUtils.getVCFLikeFormat();
             QueryParam queryParam = QueryParam.defaultQueryParam(format);
 
 //            queryParam.setGcIdx(2, GCDeviation.D5);
@@ -29,12 +31,24 @@ public class SamplerTest {
             queryParam.setExcludeInput(true);
             queryParam.setVariantTypeSpecific(true);
             queryParam.setCrossChr(true);
-            Sampler query = new Sampler("/query.sort.chr.pos.txt", "/hg19/EUR.gz", queryParam);
+            queryParam.cellIdx = 113;
+            queryParam.markerIndex = 2;
+            Sampler query = new Sampler("/hg19/VarNoteDB_FP_Roadmap_E116.DHS.variant.1000.txt", "/hg19/EUR.gz", queryParam);
             query.doQuery();
             query.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void testIndex() {
+        String[] args = new String[]{ "-D", "/hg19/EUR.gz",
+                "-Q:vcfLike", "/hg19/VarNoteDB_FP_Roadmap_E116.DHS.variant.1000.txt",
+                "-CT", "E116",
+                "-M", "H3K4me3"};
+        org.mulinlab.variantsampler.cmdline.tools.Sampler sampler = new org.mulinlab.variantsampler.cmdline.tools.Sampler();
+        sampler.instanceMain(args);
     }
 
     @Test
@@ -50,4 +64,21 @@ public class SamplerTest {
     }
 
 
+    public static void initClass(Class<?> clazz, String[] args) {
+        initClass(clazz, args, false);
+    }
+
+    public static void initClass(Class<?> clazz, String[] args, boolean printUsage) {
+        final CMDProgram program;
+        try {
+            program = (CMDProgram)clazz.newInstance();
+            if(printUsage) System.out.println("\n\n" + program.getUsage() + "\n\n");
+
+            int ret = program.instanceMain(args);
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 }

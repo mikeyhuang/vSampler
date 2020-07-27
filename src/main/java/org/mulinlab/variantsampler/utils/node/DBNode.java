@@ -96,6 +96,10 @@ public final class DBNode extends AbstractNode {
         return cellMarks;
     }
 
+    public void setCellMarks(long[][] cellMarks) {
+        this.cellMarks = cellMarks;
+    }
+
     public long getAddress() {
         return address;
     }

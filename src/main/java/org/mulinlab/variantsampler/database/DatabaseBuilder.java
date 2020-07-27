@@ -9,6 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.mulinlab.variantsampler.utils.*;
 import org.mulinlab.variantsampler.utils.node.DBNode;
 import org.mulinlab.varnote.config.param.DBParam;
+import org.mulinlab.varnote.operations.decode.TABLocCodec;
+import org.mulinlab.varnote.operations.readers.db.VannoMixReader;
+import org.mulinlab.varnote.operations.readers.db.VannoReader;
 import org.mulinlab.varnote.utils.JannovarUtils;
 import org.mulinlab.varnote.utils.LoggingUtils;
 import org.mulinlab.varnote.utils.database.DatabaseFactory;
@@ -22,6 +25,7 @@ import org.mulinlab.varnote.utils.jannovar.VariantAnnotation;
 import org.mulinlab.varnote.utils.node.LocFeature;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -45,6 +49,10 @@ public final class DatabaseBuilder {
     private TissueAnnotation tissueAnno;
     private GCAnnotation gcAnnotation;
 
+
+    private VannoReader existDB;
+    private TABLocCodec tabLocCodec;
+
     private final Gson gson = new Gson();
     private MyEndianOutputStream out;
 
@@ -60,8 +68,6 @@ public final class DatabaseBuilder {
 
         in = new BlockCompressedInputStream(new File(dbSource.getVal(DBSource.DB1000G)));
 
-        loadJannovar();
-
         DBParam dbParam = new DBParam(dbSource.getVal(DBSource.DB1000G));
         dbParam.setIndexType(IndexType.TBI);
         database = (TbiDatabase)DatabaseFactory.readDatabase(dbParam);
@@ -72,6 +78,13 @@ public final class DatabaseBuilder {
         distanceComputer = new DistanceComputer(dbSource.getVal(DBSource.GENCODE_GENE));
         roadmapAnno = new RoadmapAnnotation(dbSource.getVal(DBSource.ROADMAP));
         gcAnnotation = new GCAnnotation(dbSource.getVal(DBSource.GC_PATH));
+
+        if(dbSource.getVal(DBSource.DB) != null) {
+            this.existDB = new VannoMixReader(dbSource.getVal(DBSource.DB), false);
+            this.tabLocCodec = GP.getDefaultDecode( true);
+        } else {
+            loadJannovar();
+        }
     }
 
     public void getVariantEffectResource() throws IOException {
@@ -132,9 +145,9 @@ public final class DatabaseBuilder {
                         }
 
                         count++;
-                        if(count % 10000 == 0) {
-                            System.out.println(count ); //+ ", " + seconds
-                        }
+//                        if(count % 10000 == 0) {
+//                            System.out.println(count ); //+ ", " + seconds
+//                        }
                     }
                 } else {
                     System.out.println(locFeature + "\t" + mafval);
@@ -147,11 +160,12 @@ public final class DatabaseBuilder {
     public void close() throws IOException {
         in.close();
         out.close();
-        roadmapAnno.close();
-        distanceComputer.close();
-        ldComputer.close();
-        tissueAnno.close();
-        gcAnnotation.close();
+        if(roadmapAnno != null) roadmapAnno.close();
+        if(distanceComputer != null) distanceComputer.close();
+        if(ldComputer != null) ldComputer.close();
+        if(tissueAnno != null) tissueAnno.close();
+        if(gcAnnotation != null) gcAnnotation.close();
+        if(existDB != null) existDB.close();
     }
 
     public void printNode(final DBNode dbNode) throws IOException {
@@ -172,26 +186,48 @@ public final class DatabaseBuilder {
         final String chr = locFeature.chr;
         final int pos = locFeature.beg + 1;
 
-        Pair<Integer[], Pair<Integer, Integer>[]> ldResult = ldComputer.compute(chr, pos, locFeature.ref, locFeature.alt);
-        if(ldResult != null) {
-            getTissueAnno();
+        Pair<Integer[], Pair<Integer, Integer>[]> ldResult = null;
+        if(existDB != null) {
+            existDB.query(locFeature);
+            LocFeature dbF;
+            DBNode dbNode;
 
-            final int dtct = distanceComputer.computeDTCT(chr, pos);
-            final Integer[] geneDensity = distanceComputer.computeGeneInDistance(chr, pos);
-            final Integer[] geneInLD = distanceComputer.computeGeneInLD(chr, ldResult.getValue());
-            final long[][] cellMarks = roadmapAnno.query(chr, pos);
+            List<String> result = existDB.getResults();
+            for (String s: result) {
 
-            int category = -1;
-            VariantAnnotation annotation = jannovarUtils.annotate(chr, pos, locFeature.ref, locFeature.alt);
-            if(annotation != null) {
-                Map<String, String> map = variantAnnoMap.get(annotation.getVariantEffect().toString());
-                category = (int)(Double.parseDouble(map.get("category")));
+                dbF = tabLocCodec.decode(s);
+
+                if(dbF.beg == locFeature.beg && dbF.end == locFeature.end && dbF.ref.equalsIgnoreCase(locFeature.ref) && dbF.alt.equalsIgnoreCase(locFeature.alt)) {
+                    dbNode = new DBNode(dbF);
+                    dbNode.decodeOthers();
+                    dbNode.setCellMarks(roadmapAnno.query(chr, pos));
+                    return dbNode;
+                }
             }
-
-            long[] tissueArr = tissueAnno.getAnno(chr, pos, locFeature.ref, locFeature.alt).toLongArray();
-            return new DBNode(locFeature, mafval, dtct, geneDensity, geneInLD, ldResult.getKey(), cellMarks, null, category, tissueArr.length > 0 ? tissueArr[0] : 0, gcAnnotation.getGCContent(chr, pos));
-        } else {
+            System.out.println("not find locFeature=" + locFeature.toString());
             return null;
+        } else {
+            ldResult = ldComputer.compute(chr, pos, locFeature.ref, locFeature.alt);
+            if(ldResult != null) {
+                getTissueAnno();
+
+                final int dtct = distanceComputer.computeDTCT(chr, pos);
+                final Integer[] geneDensity = distanceComputer.computeGeneInDistance(chr, pos);
+                final Integer[] geneInLD = distanceComputer.computeGeneInLD(chr, ldResult.getValue());
+                final long[][] cellMarks = roadmapAnno.query(chr, pos);
+
+                int category = -1;
+                VariantAnnotation annotation = jannovarUtils.annotate(chr, pos, locFeature.ref, locFeature.alt);
+                if(annotation != null) {
+                    Map<String, String> map = variantAnnoMap.get(annotation.getVariantEffect().toString());
+                    category = (int)(Double.parseDouble(map.get("category")));
+                }
+
+                long[] tissueArr = tissueAnno.getAnno(chr, pos, locFeature.ref, locFeature.alt).toLongArray();
+                return new DBNode(locFeature, mafval, dtct, geneDensity, geneInLD, ldResult.getKey(), cellMarks, null, category, tissueArr.length > 0 ? tissueArr[0] : 0, gcAnnotation.getGCContent(chr, pos));
+            } else {
+                return null;
+            }
         }
     }
 }

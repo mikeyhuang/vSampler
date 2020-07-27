@@ -33,6 +33,7 @@ public class SamplerWrite {
 
     private String queryFile;
     private String dbFile;
+    private boolean isZip = false;
 
     public SamplerWrite(final String queryFile, final String dbFile, final QueryParam queryParam, String outputDir) {
         this.queryParam = queryParam;
@@ -103,7 +104,7 @@ public class SamplerWrite {
             list.add(new Log(1, "geneDeviation", "Gene density deviation", "[" + queryParam.getGeneRange()[0] + ", " + queryParam.getGeneRange()[1] + "]"));
         }
         if(queryParam.ldIndex != GP.NO_LD_BUDDIES) {
-            list.add(new Log(1, "LDBuddies", "in LD variants", LD.getVal(queryParam.ldIndex).getTitle()));
+            list.add(new Log(1, "LDBuddies", "Number of variants in LD", LD.getVal(queryParam.ldIndex).getTitle()));
             list.add(new Log(1, "ldDeviation", "LD deviation", "[" + queryParam.getLdBuddiesRange()[0] + ", " + queryParam.getLdBuddiesRange()[1] + "]"));
         }
 
@@ -112,9 +113,9 @@ public class SamplerWrite {
             list.add(new Log(1, "gcDeviation", "GC deviation", "[" + queryParam.getGcRange()[0]/100 + ", " + queryParam.getGcRange()[1]/100 + "]"));
         }
 
-        list.add(new Log(1, "VariantRegion", "Variant Region Match", queryParam.variantTypeMatch + ""));
+        list.add(new Log(1, "VariantRegion", "Match coding/noncoding region", queryParam.variantTypeMatch + ""));
         if(queryParam.hasCellMarker) {
-            list.add(new Log(1, "CellType", "Cell type-specific Epigenomic Marks:", CellType.getVal(queryParam.cellIdx).toString() + "|" + Marker.getVal(queryParam.markerIndex).toString()));
+            list.add(new Log(1, "CellType", "Cell type-specific Epigenomic Marks", CellType.getVal(queryParam.cellIdx).toString() + "|" + Marker.getVal(queryParam.markerIndex).toString()));
         }
         if(queryParam.tissueIdx > -1) {
             list.add(new Log(1, "Tissue", "Tissue", TissueType.getVal(queryParam.tissueIdx).toString()));
@@ -230,7 +231,7 @@ public class SamplerWrite {
         this.inputExcludeOutput.close();
 
         printConfig(queryFile, dbFile);
-        ZipFiles.zipDirectory(new File(this.outputDir), this.outputDir + ".zip");
+        if(isZip) ZipFiles.zipDirectory(new File(this.outputDir), this.outputDir + ".zip");
     }
 
     public int getInsufficientCount() {
@@ -280,5 +281,13 @@ public class SamplerWrite {
         public int getGroup() {
             return group;
         }
+    }
+
+    public boolean isZip() {
+        return isZip;
+    }
+
+    public void setZip(boolean zip) {
+        isZip = zip;
     }
 }

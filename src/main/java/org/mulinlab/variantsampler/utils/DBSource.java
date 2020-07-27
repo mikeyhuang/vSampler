@@ -11,6 +11,7 @@ public final class DBSource {
     static final char SECTION_BEGIN = '[';
     static final char SECTION_END = ']';
 
+    public static final String DB = "edb";
     public static final String ROADMAP = "roadmap";
     public static final String DB1000G = "1000G";
     public static final String GENCODE_GENE = "gene_file";
@@ -61,7 +62,7 @@ public final class DBSource {
             name = line.substring(0, idx).trim();
             value = line.substring(idx+1).trim();
 
-            if(srcMap.get(name) != null) {
+            if(srcMap.get(name) != null || name.equalsIgnoreCase(DB)) {
                 srcMap.put(name, value);
             }
         }

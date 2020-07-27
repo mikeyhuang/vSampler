@@ -28,23 +28,24 @@ public class Sampler {
     protected SamplerWrite samplerWrite;
 
     public Sampler(final String queryFile, final String dbFile) {
-        this(queryFile, dbFile, QueryParam.defaultQueryParam(), null);
+        this(queryFile, dbFile, QueryParam.defaultQueryParam(), null, false);
     }
 
     public Sampler(final String queryFile, final Format format, final String dbFile) {
-        this(queryFile, dbFile, QueryParam.defaultQueryParam(format), null);
+        this(queryFile, dbFile, QueryParam.defaultQueryParam(format), null, false);
     }
 
     public Sampler(final String queryFile, final String dbFile, final QueryParam queryParam) {
-        this(queryFile, dbFile, queryParam, null);
+        this(queryFile, dbFile, queryParam, null, false);
     }
-    public Sampler(final String queryFile, final String dbFile, final QueryParam queryParam, String outputDir) {
+    public Sampler(final String queryFile, final String dbFile, final QueryParam queryParam, String outputDir, boolean isZip) {
         this.queryParam = queryParam;
 
-        this.timeMetric = new TimeMetric("VSampler ");
+        this.timeMetric = new TimeMetric("vSampler ");
         this.timeMetric.setMaxCount(1000);
         try {
             samplerWrite = new SamplerWrite(queryFile, dbFile, queryParam, outputDir);
+            samplerWrite.setZip(isZip);
 
             FileType fileType = VannoUtils.checkFileType(queryFile);
             checkFormat(queryParam.getFormat(), queryFile, fileType);

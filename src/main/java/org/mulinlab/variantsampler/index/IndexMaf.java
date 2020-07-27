@@ -61,9 +61,10 @@ public final class IndexMaf {
             mafAddrsMap = new HashMap<>();
             System.out.println("chr=" + i);
             for (int j = 0; j <= GP.MAX_MAF; j++) {
-                System.out.println("maf=" + j);
+//                System.out.println("maf=" + j);
                 getMafList(String.valueOf(i), j);
                 if (mafList.size() > 0) {
+//                    System.out.println(mafList.size());
                     writeIndexForMaf(j);
                 }
             }
@@ -170,7 +171,7 @@ public final class IndexMaf {
 
         long[] cellMark;
         for (int i=0; i<GP.ROADMAP_SIZE; i++) {
-            mafAddress.setLdBuddiesAddress(out.getOut().getFilePointer(), i);
+            mafAddress.setRoadmapAnnoAddress(out.getOut().getFilePointer(), i);
             for (DBNode dbNode: mafList) {
                 cellMark = dbNode.getCellMarks()[i];
                 if(cellMark != null && cellMark.length > 0) {
@@ -223,7 +224,7 @@ public final class IndexMaf {
             dbNode = new DBNode(locFeature);
 
             if(!dbNode.getLocFeature().chr.equals(chr)) break;
-            if((dbNode.mafOrg > GP.MAF_FILTER) && (dbNode.maf == maf)) {
+            if((dbNode.mafOrg >= GP.MAF_FILTER) && (dbNode.maf == maf)) {
                 dbNode.setAddress(filePointer);
                 dbNode.decodeOthers();
                 mafList.add(dbNode);

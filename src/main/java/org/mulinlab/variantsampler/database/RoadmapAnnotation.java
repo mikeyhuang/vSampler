@@ -106,9 +106,10 @@ public final class RoadmapAnnotation {
         long[][] results = new long[markTypes.keySet().size()][];
 
         int index = 0;
-        for (String mark:markTypes.keySet()) {
-            results[index++] = compress(markTypes.get(mark));
+        for (Marker mark: Marker.values()) {
+            results[index++] = compress(markTypes.get(mark.toString()));
         }
+
         return results;
     }
 

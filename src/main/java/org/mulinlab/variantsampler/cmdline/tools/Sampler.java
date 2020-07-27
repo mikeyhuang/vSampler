@@ -56,22 +56,22 @@ public final class Sampler extends CMDProgram {
     private MAFDeviation mafDevia = GP.DEFAULT_MAF_DEVIATION;
 
     @Argument(fullName = "disDeviation", shortName = "DD", doc = "Deviation range of distance to closest transcription start site (DTCT). Input variant DTCT ± DTCT deviation range.", optional = true)
-    private int disDevia = GP.DEFAULT_DIS_DEVIATION;
+    private int disDevia = GP.NO_DTCT;
 
     @Argument(fullName = "geneDeviation", shortName = "GD", doc = "Deviation range of gene density number.", optional = true)
-    private int geneDevia = GP.DEFAULT_GENE_DEVIATION;
+    private int geneDevia = GP.NO_GENE_DEVI;
 
     @Argument(fullName = "inLDvariantsDeviation", shortName = "LDD", doc = "Deviation range of in LD variants number.", optional = true)
-    private int ldBuddiesDevia = GP.DEFAULT_LD_BUDDIES_DEVIATION;
+    private int ldBuddiesDevia = GP.NO_LD_BUDDIES;
 
     @Argument(fullName = "GeneInDis", shortName = "GP", doc = "Physical distance cutoff to define gene density of variants. (KB100 means distance in 100KB, KB200 means distance in 200KB, KB300 means distance in 300KB, KB400 means distance in 400KB, KB500 means distance in 500KB, KB600 means distance in 600KB, KB700 means distance in 700KB, KB800 means distance in 800KB, KB900 means distance in 900KB, KB1000 means distance in 1M).", optional = true)
-    private GeneInDis geneInDis = GP.DEFAULT_GENE_DIS;
+    private GeneInDis geneInDis = null;
 
     @Argument(fullName = "GeneInLD", shortName = "GLD", doc = "LD cutoff to define gene density of variants. (LD1 means ld>0.1, LD2 means ld>0.2, LD3 means ld>0.3, LD4 means ld>0.4, LD5 means ld>0.5, LD6 means ld>0.6, LD7 means ld>0.7, LD8 means ld>0.8, LD9 means ld>0.9).", optional = true)
-    private LD geneInLD = GP.DEFAULT_GENE_LD;
+    private LD geneInLD = null;
 
     @Argument(fullName = "inLDvariants", shortName = "LDB", doc = "LD cutoff to define in LD variants. (LD1 means ld>0.1, LD2 means ld>0.2, LD3 means ld>0.3, LD4 means ld>0.4, LD5 means ld>0.5, LD6 means ld>0.6, LD7 means ld>0.7, LD8 means ld>0.8, LD9 means ld>0.9).", optional = true)
-    private LD ldBuddies = GP.DEFAULT_IN_LD_VIRANTS;
+    private LD ldBuddies = null;
 
 
     @Argument(fullName = "CellType", shortName = "CT", doc = "Roadmap cell type. This should be supplied with `-M,--Mark`", optional = true)
@@ -90,11 +90,14 @@ public final class Sampler extends CMDProgram {
     @Argument(fullName = "GCType", shortName = "GCT", doc = "Distance range to compute GC content(BP100 means ±100bp, BP200 means ±200bp, BP300 means ±300bp, BP400 means ±400bp, BP500 means ±500bp).", optional = true)
     private GCType gcType = null;
 
-    @Argument(fullName = "GCDeviation", shortName = "GCD", doc = "Deviation range of GC. Input GC content ± GC deviation range. (D1 means ±0.01, D2 means ±0.02, D3 means ±0.03, D4 means ±0.04, D5 means ±0.05, D6 means ±0.06, D7 means ±0.07, D8 means ±0.08, D9 means ±0.09, D10 means ±0.1)")
-    private GCDeviation gcDeviation = GP.DEFAULT_GC_DEVIATION;
+    @Argument(fullName = "GCDeviation", shortName = "GCD", doc = "Deviation range of GC. Input GC content ± GC deviation range. (D1 means ±0.01, D2 means ±0.02, D3 means ±0.03, D4 means ±0.04, D5 means ±0.05, D6 means ±0.06, D7 means ±0.07, D8 means ±0.08, D9 means ±0.09, D10 means ±0.1)", optional = true)
+    private GCDeviation gcDeviation = null;
 
-    @Argument(fullName = "Seed", shortName = "S", doc = "Random seed.", optional = true)
+    @Argument(fullName = "Seed", shortName = "S", doc = "Random seed. Set random seed to ensure reproducibility.", optional = true)
     private int randomSeed = -1;
+
+    @Argument(fullName = "isZip", shortName = "Z", doc = "Indicator of whether to compress the result folder.", optional = true)
+    private boolean isZip = false;
 
     @Override
     protected int doWork() {
@@ -108,7 +111,7 @@ public final class Sampler extends CMDProgram {
             queryParam.setAnnoNumber(annoNumber);
 
             if(randomSeed != -1) queryParam.setRandomSeed(randomSeed);
-            org.mulinlab.variantsampler.query.Sampler query = new org.mulinlab.variantsampler.query.Sampler(inputArguments.getQueryFilePath(), databaseFile.getAbsolutePath(), queryParam, outPath);
+            org.mulinlab.variantsampler.query.Sampler query = new org.mulinlab.variantsampler.query.Sampler(inputArguments.getQueryFilePath(), databaseFile.getAbsolutePath(), queryParam, outPath, isZip);
             query.doQuery();
             query.close();
         } catch (IOException e) {
