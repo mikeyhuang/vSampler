@@ -14,6 +14,7 @@ import org.mulinlab.varnote.operations.readers.db.VannoMixReader;
 import org.mulinlab.varnote.operations.readers.db.VannoReader;
 import org.mulinlab.varnote.utils.JannovarUtils;
 import org.mulinlab.varnote.utils.LoggingUtils;
+import org.mulinlab.varnote.utils.Pair;
 import org.mulinlab.varnote.utils.database.DatabaseFactory;
 import org.mulinlab.varnote.utils.database.TbiDatabase;
 import org.mulinlab.varnote.utils.database.index.TbiIndex;

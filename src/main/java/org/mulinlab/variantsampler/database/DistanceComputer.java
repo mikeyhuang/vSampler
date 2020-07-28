@@ -1,9 +1,9 @@
 package org.mulinlab.variantsampler.database;
 
 import org.mulinlab.variantsampler.utils.GP;
-import org.mulinlab.variantsampler.utils.Pair;
 import org.mulinlab.varnote.operations.readers.db.VannoMixReader;
 import org.mulinlab.varnote.operations.readers.db.VannoReader;
+import org.mulinlab.varnote.utils.Pair;
 import org.mulinlab.varnote.utils.node.LocFeature;
 import java.io.IOException;
 import java.util.List;

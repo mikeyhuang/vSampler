@@ -2,9 +2,10 @@ package org.mulinlab.variantsampler.database;
 
 
 import org.mulinlab.variantsampler.utils.GP;
-import org.mulinlab.variantsampler.utils.Pair;
 import org.mulinlab.varnote.operations.index.Variant;
 import org.mulinlab.varnote.operations.readers.gt1000g.VannoGTReader;
+import org.mulinlab.varnote.utils.Pair;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public final class LDComputer {
             Integer q = variantMap.get(pos + "_" + ref + "_" + alt);
             if(q != null) {
                 Variant query = variants.get(q);
-                javafx.util.Pair<Double, Double> ld;
+                Pair<Double, Double> ld;
                 resetLDBuddies();
 
                 for (int i = 0; i < variants.size(); i++) {

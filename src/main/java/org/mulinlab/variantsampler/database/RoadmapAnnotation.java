@@ -3,7 +3,6 @@ package org.mulinlab.variantsampler.database;
 import htsjdk.tribble.util.ParsingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mulinlab.variantsampler.utils.GP;
-import org.mulinlab.variantsampler.utils.Pair;
 import org.mulinlab.variantsampler.utils.enumset.CellType;
 import org.mulinlab.variantsampler.utils.enumset.Marker;
 import org.mulinlab.varnote.operations.readers.db.VannoMixReader;
