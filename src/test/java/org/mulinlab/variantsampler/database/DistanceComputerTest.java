@@ -4,8 +4,8 @@ import htsjdk.samtools.util.Log;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.mulinlab.variantsampler.utils.DBSource;
-import org.mulinlab.variantsampler.utils.Pair;
 import org.mulinlab.varnote.utils.LoggingUtils;
+import org.mulinlab.varnote.utils.Pair;
 
 import java.io.IOException;
 

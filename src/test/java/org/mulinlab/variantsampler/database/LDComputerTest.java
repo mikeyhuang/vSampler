@@ -2,8 +2,8 @@ package org.mulinlab.variantsampler.database;
 
 import org.junit.Test;
 import org.mulinlab.variantsampler.utils.DBSource;
-import org.mulinlab.variantsampler.utils.Pair;
 import org.mulinlab.varnote.filters.iterator.NoFilterIterator;
+import org.mulinlab.varnote.utils.Pair;
 import org.mulinlab.varnote.utils.enumset.FileType;
 import org.mulinlab.varnote.utils.gz.MyBlockCompressedOutputStream;
 import org.mulinlab.varnote.utils.gz.MyEndianOutputStream;
